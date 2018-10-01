@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+<color name="colorPrimary">#3F51B5</color>
+<color name="colorPrimaryDark">#303F9F</color>
+<color name="colorAccent">#FF4081</color>
+
+<color name="rojoArke1">#F03034</color>
+<color name="rojoArke2">#CF2121</color>
+
+<color name="azulArke1">#009ECF</color>
+<color name="azulArke2">#004A7F</color>
+
+
+
+<color name="grisArke1">#EBEBEB</color>
+<color name="grisArke2">#929292</color>
+<color name="grisArke3">#5D5D5D</color>
+
+
 </resources>
