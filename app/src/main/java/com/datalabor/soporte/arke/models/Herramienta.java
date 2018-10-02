@@ -109,9 +109,21 @@ public class Herramienta implements Serializable{
 
     private ArrayList<Mantenimiento> _mantenimientos;
 
+    public ArrayList<String> get_images() {
+        return _images;
+    }
+
+    public void set_images(ArrayList<String> _images) {
+        this._images = _images;
+    }
+
+    private ArrayList<String> _images;
+
+
     public Herramienta()
     {
         _mantenimientos = new ArrayList<>();
+        _images = new ArrayList<>();
     }
 
 

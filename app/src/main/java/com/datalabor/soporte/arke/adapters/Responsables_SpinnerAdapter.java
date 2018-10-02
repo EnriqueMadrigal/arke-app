@@ -8,21 +8,21 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.datalabor.soporte.arke.R;
 import com.datalabor.soporte.arke.models.Obra;
+import com.datalabor.soporte.arke.models.Responsable;
 
 import java.util.ArrayList;
 
-public class Obras_SpinnerAdapter extends ArrayAdapter<Obra> {
+public class Responsables_SpinnerAdapter extends ArrayAdapter<Responsable> {
 
     // Your sent context
     private Context context;
     // Your custom values for the spinner (User)
-    private ArrayList<Obra> values;
+    private ArrayList<Responsable> values;
 
 
-    public Obras_SpinnerAdapter(Context context, int textViewResourceId,
-                             ArrayList<Obra> values) {
+    public Responsables_SpinnerAdapter(Context context, int textViewResourceId,
+                                ArrayList<Responsable> values) {
         super(context, textViewResourceId, values);
         this.context = context;
         this.values = values;
@@ -34,7 +34,7 @@ public class Obras_SpinnerAdapter extends ArrayAdapter<Obra> {
     }
 
     @Override
-    public Obra getItem(int position){
+    public Responsable getItem(int position){
         return values.get(position);
 
     }
@@ -69,6 +69,7 @@ public class Obras_SpinnerAdapter extends ArrayAdapter<Obra> {
         TextView label = (TextView) super.getDropDownView(position, convertView, parent);
         label.setTextColor(Color.BLACK);
         label.setText(values.get(position).get_name());
+
 
         return label;
     }

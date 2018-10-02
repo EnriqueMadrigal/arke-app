@@ -26,6 +26,7 @@ import com.datalabor.soporte.arke.R;
 import com.datalabor.soporte.arke.adapters.ObrasAdapter;
 import com.datalabor.soporte.arke.adapters.Obras_SpinnerAdapter;
 import com.datalabor.soporte.arke.adapters.ResponsablesAdapter;
+import com.datalabor.soporte.arke.adapters.Responsables_SpinnerAdapter;
 import com.datalabor.soporte.arke.common;
 import com.datalabor.soporte.arke.models.Catalogo;
 import com.datalabor.soporte.arke.models.Herramienta;
@@ -67,13 +68,13 @@ public class ubicacion extends Fragment {
 
     private String TAG = "ubicacion";
     private Herramienta curHerramienta;
-    private int curEquipo;
+    private int _curEquipo;
 
      private Button buttonAceptar;
     private Button buttonCancelar;
 
     private Integer _curObra = -1;
-    private Integer _curResponsables = -1;
+    private Integer _curResponsable = -1;
 
 
     private ArrayList<Obra> _obras;
@@ -84,7 +85,9 @@ public class ubicacion extends Fragment {
     private TextView lblNumEquipos;
 
 
+
     private Obras_SpinnerAdapter _obrasAdapter;
+    private Responsables_SpinnerAdapter _responsablesAdapter;
 
     public ubicacion() {
         // Required empty public constructor
@@ -112,7 +115,7 @@ public class ubicacion extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
            curHerramienta = (Herramienta) getArguments().getSerializable("herramienta");
-           curEquipo = (int) getArguments().getInt("numEquipo");
+           _curEquipo = (int) getArguments().getInt("numEquipo");
 
         }
     }
@@ -130,7 +133,7 @@ public class ubicacion extends Fragment {
         Spinner_obras = (Spinner) _view.findViewById(R.id.ubicacion_obra);
         Spinner_responsables = (Spinner) _view.findViewById(R.id.ubicacion_responsable);
 
-        lblNumEquipos.setText("Equipo: #" +  String.valueOf(curEquipo));
+        lblNumEquipos.setText("Equipo: #" +  String.valueOf(_curEquipo));
 
         _obras = new ArrayList<>();
         Load_Obras();
@@ -152,13 +155,13 @@ public class ubicacion extends Fragment {
                 Integer user_id = sharedPref.getInt(common.VAR_USER_ID, 0);
 
 
-                if (_curObra == -1 || _curResponsables == -1)
+                if (_curObra == -1 || _curResponsable == -1)
                 {
                     common.showWarningDialog("! Selección invalida ¡", "Favor seleccionar el responsable u Obra", myContext);
                 }
 
                 else {
-                    new Actualizar(myContext, curHerramienta.get_id(), _curObra, _curResponsables, user_id).execute();
+                    new Actualizar(myContext, curHerramienta.get_id(), _curObra, _curResponsable, _curEquipo, user_id).execute();
                 }
 
 
@@ -199,10 +202,34 @@ public class ubicacion extends Fragment {
                 // Here you can do the action you want to...
                 Log.d(TAG,String.valueOf(curObra.get_id()));
 
+            _curObra = curObra.get_id();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapter) {  }
         });
+
+        /////////
+        _responsablesAdapter = new Responsables_SpinnerAdapter(myContext, R.layout.spinner_item, _responsables);
+        _responsablesAdapter.setDropDownViewResource(R.layout.spinner_item);
+        Spinner_responsables.setAdapter(_responsablesAdapter);
+
+        Spinner_responsables.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                // Here you get the current item (a User object) that is selected by its position
+
+                Responsable curResponsable = _responsablesAdapter.getItem(position);
+                // Here you can do the action you want to...
+                Log.d(TAG,String.valueOf(curResponsable.get_id()));
+                _curResponsable = curResponsable.get_id();
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {  }
+        });
+
 
 
         /////////
@@ -460,7 +487,7 @@ public class ubicacion extends Fragment {
 
 
                     }
-
+                    _responsablesAdapter.notifyDataSetChanged();
                 }
 
 
@@ -597,16 +624,18 @@ public class ubicacion extends Fragment {
         Integer id_obra;
         Integer id_responsable;
         Integer id_usuario;
+        Integer num_Equipo;
         Context context;
 
 
 
-        public Actualizar( Context _context, Integer idHerramienta,Integer idObra, Integer idResponsable, Integer idUsuario )
+        public Actualizar( Context _context, Integer idHerramienta,Integer idObra, Integer idResponsable, Integer numEquipo,Integer idUsuario )
         {
             id_herramienta = idHerramienta;
             id_obra = idObra;
             id_responsable = idResponsable;
             id_usuario = idUsuario;
+            num_Equipo = numEquipo;
             context = _context;
 
         }
@@ -633,6 +662,7 @@ public class ubicacion extends Fragment {
                 jsonParam.put("id_obra", id_obra);
                 jsonParam.put("id_responsable", id_responsable);
                 jsonParam.put("id_usuario", id_usuario);
+                jsonParam.put("no_equipo", num_Equipo);
 
             }
 

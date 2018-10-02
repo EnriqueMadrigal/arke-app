@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,12 +24,14 @@ import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.datalabor.soporte.arke.R;
+import com.datalabor.soporte.arke.adapters.MyPageAdapter;
 import com.datalabor.soporte.arke.adapters.UbicacionesAdapter;
 import com.datalabor.soporte.arke.common;
 import com.datalabor.soporte.arke.models.Herramienta;
 import com.datalabor.soporte.arke.models.IViewHolderClick;
 import com.datalabor.soporte.arke.models.Mantenimiento;
 import com.datalabor.soporte.arke.models.Ubicacion;
+import com.datalabor.soporte.arke.utils.CircleIndicator;
 import com.datalabor.soporte.arke.utils.HttpClient;
 import com.squareup.picasso.Picasso;
 
@@ -39,6 +42,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,10 +72,13 @@ public class herramienta extends Fragment {
 
     private TextView labelDescripcion;
 
-    private ImageView fotoImage;
+   // private ImageView fotoImage;
 
     private FragmentActivity myContext;
     private View _view;
+
+    private ViewPager mPager;
+    private MyPageAdapter myPageAdapter;
 
     private Herramienta curHerramienta;
     private Integer id_herramienta = 0;
@@ -83,7 +90,7 @@ public class herramienta extends Fragment {
     private LinearLayoutManager _linearLayoutManager;
 
     private ArrayList<Ubicacion> _ubicaciones;
-
+    private List<Fragment> fList;
 
     private OnFragmentInteractionListener mListener;
 
@@ -135,8 +142,9 @@ public class herramienta extends Fragment {
         galeriaButton = (ImageButton) _view.findViewById(R.id.btnGaleria);
         mantenimientosButton = (Button) _view.findViewById(R.id.btnMantenimientos);
 
-        fotoImage = (ImageView) _view.findViewById(R.id.image_herramienta);
+       // fotoImage = (ImageView) _view.findViewById(R.id.image_herramienta);
         _recyclerview = (RecyclerView) _view.findViewById(R.id.recycler5);
+        mPager = (ViewPager) _view.findViewById(R.id.ViewPager);
 
         _ubicaciones = new ArrayList<>();
         Load_Herramienta();
@@ -173,6 +181,23 @@ public class herramienta extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG,"mantenimientos");
+
+
+                            //subCategoria _subCategory = subCategoria.newInstance(curCatalogo);
+                // myContext.getSupportFragmentManager().beginTransaction().setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right ).replace( R.id.fragment_container,_subCategory, "Sub Categoria" ).commit();
+
+                mantenimientos _mantenimientos = mantenimientos.newInstance(curHerramienta);
+
+                FragmentManager fragmentManager = getFragmentManager();
+
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right );
+                fragmentTransaction.replace( R.id.fragment_container, _mantenimientos, "Mantenimientos" );
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+
+
+
             }
 
         });
@@ -215,6 +240,23 @@ public class herramienta extends Fragment {
         _recyclerview.setAdapter( _adapter );
         _recyclerview.setLayoutManager( _linearLayoutManager );
 
+        ////// Images
+
+
+        fList = new ArrayList<Fragment>();
+      //  fList.add(banner_image_class.newInstance(R.drawable.banner1));
+      //  fList.add(banner_image_class.newInstance(R.drawable.banner2));
+
+        myPageAdapter = new MyPageAdapter(myContext.getSupportFragmentManager(), fList);
+
+
+        mPager.setAdapter(myPageAdapter);
+        mPager.setCurrentItem(0);
+        myPageAdapter.notifyDataSetChanged();
+
+
+        CircleIndicator indicator = (CircleIndicator)_view.findViewById( R.id.CircleIndicator );
+        indicator.setViewPager( mPager );
 
 
         // Inflate the layout for this fragment
@@ -275,7 +317,7 @@ public class herramienta extends Fragment {
         // labelUbicacionAnterior.setText(curHerramienta.get_ubicacion_anterior());
 
         String  curUrl = curHerramienta.get_imagelink();
-
+/*
         if (curUrl.length()>8) {
             Picasso.with(myContext)
                     .load(curUrl)
@@ -286,27 +328,24 @@ public class herramienta extends Fragment {
         {
             fotoImage.setImageResource(R.drawable.image_notavailable);
         }
-
-        StringBuilder mantenimientos = new StringBuilder();
-
-        Integer curContador = 1;
-        for(Mantenimiento mantenimiento: curHerramienta.get_mantenimientos())
+*/
+       ArrayList<String> images = curHerramienta.get_images();
+        for (String curImage: images)
         {
-            mantenimientos.append(String.valueOf(curContador));
-            mantenimientos.append(".");
-            mantenimientos.append("-");
-            mantenimientos.append(" ");
-            mantenimientos.append(android.text.format.DateFormat.format("dd/MM/yyyy", mantenimiento.get_fecha()));
-            mantenimientos.append(" ");
-            mantenimientos.append(" ");
-            mantenimientos.append(mantenimiento.get_desc());
-            mantenimientos.append(" ");
-            mantenimientos.append(System.getProperty("line.separator"));
-            curContador ++;
+
+            fList.add(banner_image_class.newInstance(curImage));
 
         }
 
-      //  labelMantenimientos.setText(mantenimientos.toString());
+
+        if (images.size()==0)
+        {
+            fList.add(banner_image_class_resource.newInstance(R.drawable.image_notavailable));
+        }
+
+        myPageAdapter.notifyDataSetChanged();
+
+
 
     }
 
@@ -362,8 +401,14 @@ public class herramienta extends Fragment {
 
 
                     JSONArray mantenimientos = cur_herramienta.getJSONArray("mantenimientos");
+                    JSONArray images = cur_herramienta.getJSONArray("images");
+
+
                     ArrayList<Mantenimiento> _mantenimientos;
+                    ArrayList<String> _images;
+
                     _mantenimientos = new ArrayList<>();
+                    _images = new ArrayList<>();
 
                     //Integer UserId = user.getInt("id");
                     //Integer permiso = user.getInt("permiso");
@@ -374,7 +419,15 @@ public class herramienta extends Fragment {
 
                     //startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
-                    for (int i = 0; i < mantenimientos.length(); i++) {
+                    for (int i = 0; i < images.length(); i++) {
+                        String curImage = images.getString(i);
+                        _images.add(curImage);
+
+                    }
+
+
+
+                        for (int i = 0; i < mantenimientos.length(); i++) {
 
                         Mantenimiento _mantenimiento = new Mantenimiento();
                         JSONObject row = mantenimientos.getJSONObject(i);
@@ -402,6 +455,7 @@ public class herramienta extends Fragment {
                     }
 
                     newHerramienta.set_mantenimientos(_mantenimientos);
+                    newHerramienta.set_images(_images);
 
                     curHerramienta = newHerramienta;
                     LoadValues();
