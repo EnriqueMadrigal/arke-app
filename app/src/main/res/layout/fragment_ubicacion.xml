@@ -10,14 +10,44 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/grisArke1"
-        android:orientation="vertical"
-        android:weightSum="1">
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"></LinearLayout>
+
+
+        <TextView
+            style="@style/NormalBlackField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:text="Cambio de ubicación de la herramienta:" />
+
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.40"
+            android:layout_height="10dp"></LinearLayout>
+
+
+        <TextView
+            style="@style/NormalBlackField"
+            android:id="@+id/lblUbicacionNumEquipo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:text="Equipo: #" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"></LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/custom_background1">
 
@@ -30,21 +60,63 @@
                     android:paddingLeft="16dp"
                     android:text="Selecciona la Obra:" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler3"
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp" />
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:background="@color/grisArke2">
+
+                    <Spinner
+                        android:id="@+id/ubicacion_obra"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="0dp"
+                        android:background="@color/grisArke2">
+
+                    </Spinner>
+
+                </LinearLayout>
 
 
+                <LinearLayout
+                    android:layout_width="16dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/grisArke2">
+
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:src="@drawable/spinner_dropdown" />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="5dp"></LinearLayout>
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"></LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.40"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/custom_background1">
 
@@ -56,27 +128,67 @@
                 android:paddingLeft="16dp"
                 android:text="Selecciona el responsable:" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler4"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp" />
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:background="@color/grisArke3">
+
+                    <Spinner
+                        android:id="@+id/ubicacion_responsable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="0dp"
+                        android:background="@color/grisArke1">
+
+                    </Spinner>
+
+                </LinearLayout>
 
 
+                <LinearLayout
+                    android:layout_width="16dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/grisArke1">
+
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:src="@drawable/spinner_dropdown" />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="5dp"></LinearLayout>
 
         </LinearLayout>
 
 
 
 
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="40dp"></LinearLayout>
 
 
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.20"
+                android:layout_height="wrap_content"
                 android:gravity="center">
 
                 <LinearLayout

@@ -10,19 +10,25 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.datalabor.soporte.arke.R;
+import com.datalabor.soporte.arke.adapters.UbicacionesAdapter;
 import com.datalabor.soporte.arke.common;
 import com.datalabor.soporte.arke.models.Herramienta;
+import com.datalabor.soporte.arke.models.IViewHolderClick;
 import com.datalabor.soporte.arke.models.Mantenimiento;
+import com.datalabor.soporte.arke.models.Ubicacion;
 import com.datalabor.soporte.arke.utils.HttpClient;
 import com.squareup.picasso.Picasso;
 
@@ -52,18 +58,15 @@ public class herramienta extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private Button moverButton;
-    private Button responsableButton;
-    private Button fotoButton;
+    private ImageButton cameraButton;
+    private ImageButton galeriaButton;
+    private Button mantenimientosButton;
 
     private TextView labelClave;
     private TextView labelModelo;
     private TextView labelMarca;
 
     private TextView labelDescripcion;
-    private TextView labelUbicacionActual;
-    private TextView labelResponsable;
-    private TextView labelMantenimientos;
 
     private ImageView fotoImage;
 
@@ -73,6 +76,14 @@ public class herramienta extends Fragment {
     private Herramienta curHerramienta;
     private Integer id_herramienta = 0;
     private String TAG = "herramienta";
+
+
+    private UbicacionesAdapter _adapter;
+    private RecyclerView _recyclerview;
+    private LinearLayoutManager _linearLayoutManager;
+
+    private ArrayList<Ubicacion> _ubicaciones;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -120,31 +131,67 @@ public class herramienta extends Fragment {
 
         labelDescripcion = (TextView) _view.findViewById(R.id.lblDescripcion);
 
-        labelUbicacionActual = (TextView) _view.findViewById(R.id.lblUbicacionActual);
-       labelResponsable = (TextView) _view.findViewById(R.id.lblResponsable);
-
-        labelMantenimientos = (TextView) _view.findViewById(R.id.lblMantenimientos);
-
-        moverButton = (Button) _view.findViewById(R.id.btnUbicacion);
-        responsableButton = (Button) _view.findViewById(R.id.btnResponsable);
-        fotoButton = (Button) _view.findViewById(R.id.btnFotoggrafia);
+        cameraButton = (ImageButton) _view.findViewById(R.id.btnCamera);
+        galeriaButton = (ImageButton) _view.findViewById(R.id.btnGaleria);
+        mantenimientosButton = (Button) _view.findViewById(R.id.btnMantenimientos);
 
         fotoImage = (ImageView) _view.findViewById(R.id.image_herramienta);
+        _recyclerview = (RecyclerView) _view.findViewById(R.id.recycler5);
 
-
+        _ubicaciones = new ArrayList<>();
         Load_Herramienta();
+        //Load_Equipos();
 
 
 
-
-        moverButton.setOnClickListener(new View.OnClickListener() {
+        cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG,"Mover");
+                Log.d(TAG,"camara");
 
-                ubicacion _ubicacion = ubicacion.newInstance(curHerramienta);
 
-                // myContext.getSupportFragmentManager().beginTransaction().setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right ).replace( R.id.fragment_container,_herramienta, "Herramienta" ).commit();
+
+
+            }
+
+        });
+
+
+        galeriaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Log.d(TAG,"galeria");
+
+
+            }
+
+        });
+
+
+        mantenimientosButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG,"mantenimientos");
+            }
+
+        });
+
+
+        /////////
+
+        _adapter = new UbicacionesAdapter(getActivity(), _ubicaciones, new IViewHolderClick() {
+            @Override
+            public void onClick(int position) {
+
+
+                Ubicacion curUbicacion =  _ubicaciones.get(position);
+                Log.d(TAG, String.valueOf(curUbicacion.get_id()));
+
+                //subCategoria _subCategory = subCategoria.newInstance(curCatalogo);
+                // myContext.getSupportFragmentManager().beginTransaction().setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right ).replace( R.id.fragment_container,_subCategory, "Sub Categoria" ).commit();
+
+                ubicacion _ubicacion = ubicacion.newInstance(curHerramienta , curUbicacion.get_num());
 
                 FragmentManager fragmentManager = getFragmentManager();
 
@@ -156,29 +203,19 @@ public class herramienta extends Fragment {
 
 
             }
-
         });
 
 
-        responsableButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+        //////////
+
+        _linearLayoutManager = new LinearLayoutManager( getActivity() );
+
+        _recyclerview.setHasFixedSize( true );
+        _recyclerview.setAdapter( _adapter );
+        _recyclerview.setLayoutManager( _linearLayoutManager );
 
 
-
-
-            }
-
-        });
-
-
-        fotoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG,"Foto");
-            }
-
-        });
 
         // Inflate the layout for this fragment
         return _view;
@@ -234,17 +271,21 @@ public class herramienta extends Fragment {
         labelMarca.setText(curHerramienta.get_marca());
         labelModelo.setText(curHerramienta.get_modelo());
 
-        labelResponsable.setText(curHerramienta.get_responsable());
         labelDescripcion.setText(curHerramienta.get_desc());
-        labelUbicacionActual.setText(curHerramienta.get_ubicacion_actual());
         // labelUbicacionAnterior.setText(curHerramienta.get_ubicacion_anterior());
 
+        String  curUrl = curHerramienta.get_imagelink();
 
-        Picasso.with(myContext)
-                .load(curHerramienta.get_imagelink())
-                .placeholder(R.drawable.image_notavailable)
-                .into(fotoImage);
-
+        if (curUrl.length()>8) {
+            Picasso.with(myContext)
+                    .load(curUrl)
+                    .placeholder(R.drawable.image_notavailable)
+                    .into(fotoImage);
+        }
+        else
+        {
+            fotoImage.setImageResource(R.drawable.image_notavailable);
+        }
 
         StringBuilder mantenimientos = new StringBuilder();
 
@@ -265,7 +306,7 @@ public class herramienta extends Fragment {
 
         }
 
-        labelMantenimientos.setText(mantenimientos.toString());
+      //  labelMantenimientos.setText(mantenimientos.toString());
 
     }
 
@@ -364,6 +405,7 @@ public class herramienta extends Fragment {
 
                     curHerramienta = newHerramienta;
                     LoadValues();
+                    Load_Equipos();
 
                 }
 
@@ -441,5 +483,134 @@ public class herramienta extends Fragment {
 
     ///////////
 
+    private void Load_Equipos()
+    {
+
+        new EquiposLoad(myContext, curHerramienta.get_id()).execute();
+
+    }
+
+    private void handleSent( HttpClient.HttpResponse response )
+    {
+        if( response.getCode() == 200 )
+        {
+            try
+            {
+                JSONObject json = new JSONObject( response.getResponse() );
+                Log.d("LOGin", "resultado");
+
+
+
+                if (json.getInt("error") == 1)
+                {
+                    common.showWarningDialog("! No se pudo cargar el contenido ¡", "Favor de revisar la conexión de datos", myContext);
+                    return;
+                }
+
+                if (json.getInt("error") == 0) // No hay errores continuar
+                {
+                    Herramienta newHerramienta = new Herramienta();
+
+                   JSONArray ubicaciones = json.getJSONArray("message");
+
+                    for (int i = 0; i < ubicaciones.length(); i++) {
+
+                        Ubicacion newUbicacion = new Ubicacion();
+
+                        JSONObject row = ubicaciones.getJSONObject(i);
+                        int id = row.getInt("id");
+                        int num_equipo = row.getInt("num_equipo");
+
+                        String  ubicacion = row.getString("ubicacion_actual");
+                        String responsable = row.getString("responsable");
+
+                        newUbicacion.set_id(id);
+                        newUbicacion.set_num(num_equipo);
+                        newUbicacion.set_ubicacion(ubicacion);
+                        newUbicacion.set_responsable(responsable);
+
+                        _ubicaciones.add(newUbicacion);
+
+                    }
+
+                        _adapter.notifyDataSetChanged();
+
+
+                    }
+
+
+
+
+            }
+            catch( Exception e )
+            {
+                android.util.Log.e( "JSONParser", "Cant parse: " + e.getMessage() );
+                // Common.alert( this, "No se ha podido registrar, por favor intenta nuevamente más tarde." );
+            }
+        }
+        else {
+            //Common.alert( this, "No se ha podido registrar, por favor intenta nuevamente más tarde." );
+        }
+    }
+
+
+
+    private class EquiposLoad extends AsyncTask<Void, Void, HttpClient.HttpResponse>
+    {
+        ProgressDialog _progressDialog;
+        Context _context;
+        Integer _idEquipo;
+
+        public EquiposLoad( Context context ,Integer idEquipo )
+        {
+            _idEquipo = idEquipo;
+            _context = context;
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            _progressDialog = ProgressDialog.show( _context, "Espera un momento..", "Obteniendo resultado..", true );
+
+
+        }
+
+        @Override
+        protected HttpClient.HttpResponse doInBackground( Void... arg0 )
+        {
+
+            JSONObject jsonParam = new JSONObject();
+
+            try {
+            }
+
+
+            catch (Exception e)
+            {
+                return null;
+            }
+
+
+            HttpClient.HttpResponse response = HttpClient.postJson( common.API_URL_BASE + "getEquipos/" + String.valueOf(_idEquipo), jsonParam );
+            android.util.Log.d( "TEST", String.format( "HTTP CODE: %d RESPONSE: %s", response.getCode(), response.getResponse() ) );
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute( HttpClient.HttpResponse result )
+        {
+            super.onPostExecute( result );
+            _progressDialog.dismiss();
+            handleSent( result );
+
+
+        }
+    }
+
+
+
+    ////////
 
 }

@@ -254,7 +254,7 @@ public class subCategoria extends Fragment {
                         String link = row.getString("image");
                         String desc = row.getString("desc");
                         String clave = row.getString("clave");
-                        String ubicacion = row.getString("ubicacion");
+                       // String ubicacion = row.getString("ubicacion");
 
 
                         Herramienta_Simple cat = new Herramienta_Simple();
@@ -262,7 +262,7 @@ public class subCategoria extends Fragment {
                         cat.set_id(id);
                         cat.set_imagelink(link);
                         cat.set_clave(clave);
-                        cat.set_ubicacion(ubicacion);
+                        //cat.set_ubicacion(ubicacion);
                         _herramientas.add(cat);
 
                     }

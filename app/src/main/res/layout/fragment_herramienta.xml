@@ -8,9 +8,7 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,19 +22,18 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="20dp"></LinearLayout>
+            android:layout_height="10dp"></LinearLayout>
 
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:gravity="center">
 
             <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.8"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
                 android:layout_gravity="center"
                 android:id="@+id/image_herramienta"/>
 
@@ -45,7 +42,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="20dp">
+        android:layout_height="10dp">
 
     </LinearLayout>
 
@@ -53,62 +50,34 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="1"
+        android:gravity="end"
         android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="0.33"
-            android:padding="5dp">
 
-            <Button
+            <ImageButton
                 android:background="@drawable/button2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ubicar"
-                android:id="@+id/btnUbicacion"
-                android:textColor="@android:color/white"
-                android:textSize="12dp"/>
+                android:src="@drawable/icon_camera"
+                android:scaleType="fitCenter"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:id="@+id/btnCamera"/>
+
+<LinearLayout
+    android:layout_width="20dp"
+    android:layout_height="32dp"></LinearLayout>
 
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="0.33"
-            android:padding="5dp">
-
-            <Button
-                android:background="@drawable/button1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Firmar"
-                android:id="@+id/btnResponsable"
-                android:textColor="@android:color/white"
-                android:textSize="12dp"/>
+        <ImageButton
+            android:background="@drawable/button2"
+            android:src="@drawable/icon_gallery"
+            android:scaleType="fitCenter"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:id="@+id/btnGaleria"/>
 
 
-        </LinearLayout>
 
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="0.33"
-            android:padding="5dp">
-
-            <Button
-                android:background="@drawable/button3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Foto..."
-                android:id="@+id/btnFotoggrafia"
-                android:textColor="@android:color/white"
-                android:textSize="12dp"/>
-
-        </LinearLayout>
 
 
 
@@ -118,7 +87,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="20dp"></LinearLayout>
+        android:layout_height="10dp"></LinearLayout>
 
 
     <LinearLayout
@@ -224,8 +193,8 @@
 
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
             style="@style/NormalBlackBoldSmallField"
             android:id="@+id/lblDescripcion"
             android:text="Descripción---------"/>
@@ -236,93 +205,48 @@
             android:layout_height="10dp"></LinearLayout>
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:gravity="end"
+            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/NormalBlackBoldSmallField"
-                android:text="Ubicación:"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
+                <Button
+                    android:background="@drawable/button3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/NormalBlackSmallField"
-                    android:text="Ubicación Actual:"/>
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/NormalBlackBoldSmallField"
-                    android:paddingLeft="10dp"
-                    android:paddingStart="10dp"
-                    android:id="@+id/lblUbicacionActual"
-                    android:text="Ubicacion Actual---"/>
-
-
-            </LinearLayout>
+                    android:text="Mantenimientos"
+                    android:id="@+id/btnMantenimientos"
+                    android:textColor="@android:color/white"
+                    android:textSize="10dp"/>
 
 
 
 
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/NormalBlackSmallField"
-                    android:text="Responsable:"/>
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/NormalBlackBoldSmallField"
-                    android:paddingLeft="10dp"
-                    android:paddingStart="10dp"
-                    android:id="@+id/lblResponsable"
-                    android:text="Responsable---"/>
-
-
-            </LinearLayout>
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="20dp"></LinearLayout>
+        </LinearLayout>
 
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/NormalBlackBoldSmallField"
-            android:text="Mantenimientos:"/>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/NormalBlackBoldSmallField"
-            android:id="@+id/lblMantenimientos"
-            android:text="Mantenimientos---------"/>
+            android:text="Equipos:"/>
 
 
 
-
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:background="@android:color/white"/>
 
     </LinearLayout>
 
 
-
-    </ScrollView>
 
 </FrameLayout>

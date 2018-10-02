@@ -60,14 +60,23 @@ public class HerramientasAdapter extends RecyclerView.Adapter<HerramientasAdapte
         Herramienta_Simple curHerramienta = _items.get(position);
         holder.get_labelDesc().setText(curHerramienta.get_desc());
         holder.get_labelClave().setText((curHerramienta.get_clave()));
-        holder.get_labelUbicacion().setText(curHerramienta.get_ubicacion());
+       // holder.get_labelUbicacion().setText(curHerramienta.get_ubicacion());
 
         holder.setIndex(position);
 
-        Picasso.with(_context)
-                .load(curHerramienta.get_imagelink())
-                .placeholder(R.drawable.image_notavailable)
-                .into(holder.getIconView());
+        String curLink = curHerramienta.get_imagelink();
+
+        if (curLink.length()>8) {
+            Picasso.with(_context)
+                    .load(curLink)
+                    .placeholder(R.drawable.image_notavailable)
+                    .into(holder.getIconView());
+        }
+
+        else
+        {
+            holder.getIconView().setImageResource(R.drawable.image_notavailable);
+        }
 
         //holder.getIconView().setImageBitmap( _placeHolder );
         //  holder.getIconView().setImageResource(curCategory.getResId());
@@ -88,12 +97,10 @@ public class HerramientasAdapter extends RecyclerView.Adapter<HerramientasAdapte
             return _labelClave;
         }
 
-        public TextView get_labelUbicacion() {
-            return _labelUbicacion;
-        }
+
 
         private TextView _labelClave;
-        private TextView _labelUbicacion;
+
 
 
         private int _index;
@@ -106,7 +113,7 @@ public class HerramientasAdapter extends RecyclerView.Adapter<HerramientasAdapte
             _iconView = (ImageView) view.findViewById(R.id.imgHerramienta);
             _labelDesc = (TextView) view.findViewById(R.id.lblHerramientaDesc);
             _labelClave = (TextView) view.findViewById(R.id.lblHerramientaClave);
-            _labelUbicacion = (TextView) view.findViewById(R.id.lblHerramientaUbicacion);
+
 
                     _listener = listener;
         }

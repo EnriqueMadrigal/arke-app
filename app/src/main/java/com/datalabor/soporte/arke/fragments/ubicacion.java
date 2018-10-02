@@ -17,10 +17,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.datalabor.soporte.arke.R;
 import com.datalabor.soporte.arke.adapters.ObrasAdapter;
+import com.datalabor.soporte.arke.adapters.Obras_SpinnerAdapter;
 import com.datalabor.soporte.arke.adapters.ResponsablesAdapter;
 import com.datalabor.soporte.arke.common;
 import com.datalabor.soporte.arke.models.Catalogo;
@@ -63,23 +67,24 @@ public class ubicacion extends Fragment {
 
     private String TAG = "ubicacion";
     private Herramienta curHerramienta;
+    private int curEquipo;
 
-    private RecyclerView _recyclerview;
-    private RecyclerView _recyclerview2;
-
-    private LinearLayoutManager _linearLayoutManager;
-    private LinearLayoutManager _linearLayoutManager2;
-    private Button buttonAceptar;
+     private Button buttonAceptar;
     private Button buttonCancelar;
 
     private Integer _curObra = -1;
     private Integer _curResponsables = -1;
 
-    private ObrasAdapter _adapter;
-    private ResponsablesAdapter _adapter2;
 
     private ArrayList<Obra> _obras;
     private ArrayList<Responsable> _responsables;
+
+    private Spinner Spinner_obras;
+    private Spinner Spinner_responsables;
+    private TextView lblNumEquipos;
+
+
+    private Obras_SpinnerAdapter _obrasAdapter;
 
     public ubicacion() {
         // Required empty public constructor
@@ -93,10 +98,11 @@ public class ubicacion extends Fragment {
      * @return A new instance of fragment ubicacion.
      */
     // TODO: Rename and change types and number of parameters
-    public static ubicacion newInstance(Herramienta curHerramienta) {
+    public static ubicacion newInstance(Herramienta curHerramienta, int _numEquipo) {
         ubicacion fragment = new ubicacion();
         Bundle args = new Bundle();
         args.putSerializable("herramienta" , curHerramienta);
+        args.putInt("numEquipo", _numEquipo);
         fragment.setArguments(args);
         return fragment;
     }
@@ -106,6 +112,7 @@ public class ubicacion extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
            curHerramienta = (Herramienta) getArguments().getSerializable("herramienta");
+           curEquipo = (int) getArguments().getInt("numEquipo");
 
         }
     }
@@ -115,11 +122,15 @@ public class ubicacion extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         _view = inflater.inflate( R.layout.fragment_ubicacion, container, false );
-        _recyclerview = (RecyclerView) _view.findViewById(R.id.recycler3);
-        _recyclerview2 = (RecyclerView) _view.findViewById(R.id.recycler4);
 
         buttonAceptar  = (Button) _view.findViewById(R.id.btnActualizarUbicacion);
         buttonCancelar = (Button) _view.findViewById(R.id.btnCancelarUbicacion);
+        lblNumEquipos = (TextView) _view.findViewById(R.id.lblUbicacionNumEquipo);
+
+        Spinner_obras = (Spinner) _view.findViewById(R.id.ubicacion_obra);
+        Spinner_responsables = (Spinner) _view.findViewById(R.id.ubicacion_responsable);
+
+        lblNumEquipos.setText("Equipo: #" +  String.valueOf(curEquipo));
 
         _obras = new ArrayList<>();
         Load_Obras();
@@ -169,53 +180,29 @@ public class ubicacion extends Fragment {
         });
 
 
-///////////
+/////////// Spinners
 
-        _adapter = new ObrasAdapter(getActivity(), _obras, new IViewHolderClick() {
+        _obrasAdapter = new Obras_SpinnerAdapter(myContext, R.layout.spinner_item, _obras);
+        _obrasAdapter.setDropDownViewResource(R.layout.spinner_item);
+        Spinner_obras.setAdapter(_obrasAdapter);
+
+
+
+        Spinner_obras.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
-            public void onClick(int position) {
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                // Here you get the current item (a User object) that is selected by its position
 
-
-                Obra curObra = _obras.get(position);
-                Log.d(TAG, String.valueOf(curObra.get_id()));
-                _curObra = curObra.get_id();
-                //subCategoria _subCategory = subCategoria.newInstance(curCatalogo);
-                // myContext.getSupportFragmentManager().beginTransaction().setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right ).replace( R.id.fragment_container,_subCategory, "Sub Categoria" ).commit();
-
+                Obra curObra = _obrasAdapter.getItem(position);
+                // Here you can do the action you want to...
+                Log.d(TAG,String.valueOf(curObra.get_id()));
 
             }
-        });
-
-        _adapter2 = new ResponsablesAdapter(getActivity(), _responsables, new IViewHolderClick() {
             @Override
-            public void onClick(int position) {
-
-
-                Responsable curResponsable = _responsables.get(position);
-                Log.d(TAG, String.valueOf(curResponsable.get_id()));
-                _curResponsables = curResponsable.get_id();
-                //subCategoria _subCategory = subCategoria.newInstance(curCatalogo);
-                // myContext.getSupportFragmentManager().beginTransaction().setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right ).replace( R.id.fragment_container,_subCategory, "Sub Categoria" ).commit();
-
-
-            }
+            public void onNothingSelected(AdapterView<?> adapter) {  }
         });
-
-
-
-        _linearLayoutManager = new LinearLayoutManager( getActivity() );
-
-        _recyclerview.setHasFixedSize( true );
-        _recyclerview.setAdapter( _adapter );
-        _recyclerview.setLayoutManager( _linearLayoutManager );
-
-
-        _linearLayoutManager2 = new LinearLayoutManager( getActivity() );
-
-        _recyclerview2.setHasFixedSize( true );
-        _recyclerview2.setAdapter( _adapter2 );
-        _recyclerview2.setLayoutManager( _linearLayoutManager2 );
-
 
 
         /////////
@@ -314,8 +301,10 @@ public class ubicacion extends Fragment {
 
 
                     }
+                // Spinner Obras
+                    _obrasAdapter.notifyDataSetChanged();
 
-                    _adapter.notifyDataSetChanged();
+
                 }
 
 
@@ -472,7 +461,6 @@ public class ubicacion extends Fragment {
 
                     }
 
-                    _adapter2.notifyDataSetChanged();
                 }
 
 
