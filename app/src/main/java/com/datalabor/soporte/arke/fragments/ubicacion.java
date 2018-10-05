@@ -155,7 +155,7 @@ public class ubicacion extends Fragment {
 
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( myContext );
 
-                Integer user_id = sharedPref.getInt(common.VAR_USER_ID, 0);
+                final Integer user_id = sharedPref.getInt(common.VAR_USER_ID, 0);
 
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(myContext);
@@ -174,6 +174,8 @@ public class ubicacion extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                       String  m_Text = input.getText().toString();
+                        new Actualizar(myContext, curHerramienta.get_id(), _curObra, _curResponsable, _curEquipo, user_id, m_Text).execute();
+
                     }
                 });
                 builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -659,11 +661,12 @@ builder.show();
         Integer id_responsable;
         Integer id_usuario;
         Integer num_Equipo;
+        String cur_pass;
         Context context;
 
 
 
-        public Actualizar( Context _context, Integer idHerramienta,Integer idObra, Integer idResponsable, Integer numEquipo,Integer idUsuario )
+        public Actualizar( Context _context, Integer idHerramienta,Integer idObra, Integer idResponsable, Integer numEquipo,Integer idUsuario, String curpass )
         {
             id_herramienta = idHerramienta;
             id_obra = idObra;
@@ -671,6 +674,7 @@ builder.show();
             id_usuario = idUsuario;
             num_Equipo = numEquipo;
             context = _context;
+            cur_pass = curpass;
 
         }
 
@@ -697,6 +701,7 @@ builder.show();
                 jsonParam.put("id_responsable", id_responsable);
                 jsonParam.put("id_usuario", id_usuario);
                 jsonParam.put("no_equipo", num_Equipo);
+                jsonParam.put("user_pass", cur_pass);
 
             }
 
