@@ -2,6 +2,7 @@ package com.datalabor.soporte.arke.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -11,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -155,6 +158,37 @@ public class ubicacion extends Fragment {
                 Integer user_id = sharedPref.getInt(common.VAR_USER_ID, 0);
 
 
+                AlertDialog.Builder builder = new AlertDialog.Builder(myContext);
+                builder.setTitle("Actualizar ubicación");
+
+/////////////
+                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.text_input, (ViewGroup) getView(), false);
+// Set up the input
+                final EditText input = (EditText) viewInflated.findViewById(R.id.inputPassword);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                builder.setView(viewInflated);
+
+// Set up the buttons
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                      String  m_Text = input.getText().toString();
+                    }
+                });
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                /////////////
+builder.show();
+
+
+/*
+
                 if (_curObra == -1 || _curResponsable == -1)
                 {
                     common.showWarningDialog("! Selección invalida ¡", "Favor seleccionar el responsable u Obra", myContext);
@@ -164,7 +198,7 @@ public class ubicacion extends Fragment {
                     new Actualizar(myContext, curHerramienta.get_id(), _curObra, _curResponsable, _curEquipo, user_id).execute();
                 }
 
-
+*/
 
             }
 

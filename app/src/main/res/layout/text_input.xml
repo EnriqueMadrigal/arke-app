@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+   <TextView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:text="Introduce la contraseña:"
+       android:textSize="18dp"/>
+
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="contraseña...."
+        android:textSize="18dp"
+        android:textStyle="normal"
+        android:inputType="textPassword"
+        android:id="@+id/inputPassword"
+        android:imeOptions="actionDone"
+        android:textCursorDrawable="@null"
+        android:cursorVisible="true"
+        />
+
+
+</LinearLayout>
