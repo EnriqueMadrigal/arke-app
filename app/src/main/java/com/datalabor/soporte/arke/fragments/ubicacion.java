@@ -633,7 +633,25 @@ builder.show();
                 JSONObject json = new JSONObject( response.getResponse() );
                 Log.d("Actualizar", "resultado");
 
-                getActivity().onBackPressed();
+                ////////
+                if (json.getInt("error") == 1)
+                {
+                    common.showWarningDialog("! No se pudo actualizar ¡", "Favor de confirmar los datos", myContext);
+                    return;
+                }
+
+                if (json.getInt("error") == 0) // No hay errores continuar
+                {
+                    //getActivity().onBackPressed();
+                    getFragmentManager().popBackStack();
+
+                }
+
+
+                    ///////////
+
+
+
 
 
 

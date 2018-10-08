@@ -2,34 +2,45 @@ package com.datalabor.soporte.arke.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.datalabor.soporte.arke.R;
 import com.datalabor.soporte.arke.adapters.MyPageAdapter;
+import com.datalabor.soporte.arke.adapters.Obras_SpinnerAdapter;
+import com.datalabor.soporte.arke.adapters.Responsables_SpinnerAdapter;
 import com.datalabor.soporte.arke.adapters.UbicacionesAdapter;
 import com.datalabor.soporte.arke.common;
 import com.datalabor.soporte.arke.models.Herramienta;
 import com.datalabor.soporte.arke.models.IViewHolderClick;
 import com.datalabor.soporte.arke.models.Mantenimiento;
+import com.datalabor.soporte.arke.models.Obra;
+import com.datalabor.soporte.arke.models.Responsable;
 import com.datalabor.soporte.arke.models.Ubicacion;
 import com.datalabor.soporte.arke.utils.CircleIndicator;
 import com.datalabor.soporte.arke.utils.HttpClient;
@@ -93,6 +104,24 @@ public class herramienta extends Fragment {
     private List<Fragment> fList;
 
     private OnFragmentInteractionListener mListener;
+///////Modal
+
+    private Integer _curObra = -1;
+    private Integer _curResponsable = -1;
+
+
+    private ArrayList<Obra> _obras;
+    private ArrayList<Responsable> _responsables;
+
+
+    private Obras_SpinnerAdapter _obrasAdapter;
+    private Responsables_SpinnerAdapter _responsablesAdapter;
+
+    private Integer curUbicacionItemSelected = -1;
+
+    private String curNombreResponsable = "";
+    private String curNombreUbicacion = "";
+
 
     public herramienta() {
         // Required empty public constructor
@@ -150,6 +179,19 @@ public class herramienta extends Fragment {
         Load_Herramienta();
         //Load_Equipos();
 
+        _obras = new ArrayList<>();
+        Load_Obras();
+
+        _responsables = new ArrayList<>();
+        Load_Responsables();
+
+        _obrasAdapter = new Obras_SpinnerAdapter(myContext, R.layout.spinner_item, _obras);
+        _obrasAdapter.setDropDownViewResource(R.layout.spinner_item);
+
+        _responsablesAdapter = new Responsables_SpinnerAdapter(myContext, R.layout.spinner_item, _responsables);
+        _responsablesAdapter.setDropDownViewResource(R.layout.spinner_item);
+
+
 
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
@@ -183,19 +225,64 @@ public class herramienta extends Fragment {
                 Log.d(TAG,"mantenimientos");
 
 
-                            //subCategoria _subCategory = subCategoria.newInstance(curCatalogo);
-                // myContext.getSupportFragmentManager().beginTransaction().setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right ).replace( R.id.fragment_container,_subCategory, "Sub Categoria" ).commit();
+         //////////////////
+                AlertDialog.Builder builder = new AlertDialog.Builder(myContext);
+                builder.setTitle("Mantenimientos Realizados");
 
-                mantenimientos _mantenimientos = mantenimientos.newInstance(curHerramienta);
+/////////////
+                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.ver_mantenimientos, (ViewGroup) getView(), false);
+// Set up the input
+                 TextView lblMantenimientos = (TextView) viewInflated.findViewById(R.id.lblMantenimientos);
 
-                FragmentManager fragmentManager = getFragmentManager();
+///////////////
+                StringBuilder mantenimientos = new StringBuilder();
+                Integer curContador = 1;
 
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right );
-                fragmentTransaction.replace( R.id.fragment_container, _mantenimientos, "Mantenimientos" );
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                for(Mantenimiento mantenimiento: curHerramienta.get_mantenimientos())
+                {
+                    mantenimientos.append(String.valueOf(curContador));
+                    mantenimientos.append(".");
+                    mantenimientos.append("-");
+                    mantenimientos.append(" ");
+                    mantenimientos.append(android.text.format.DateFormat.format("dd/MM/yyyy", mantenimiento.get_fecha()));
+                    mantenimientos.append(" ");
+                    mantenimientos.append(" ");
+                    mantenimientos.append(mantenimiento.get_desc());
+                    mantenimientos.append(" ");
+                    mantenimientos.append(System.getProperty("line.separator"));
+                    curContador ++;
 
+                }
+
+                lblMantenimientos.setText(mantenimientos.toString());
+
+
+                //////////
+
+
+                builder.setView(viewInflated);
+
+// Set up the buttons
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                    }
+                });
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                /////////////
+                builder.show();
+
+
+
+                ///////////////////
 
 
             }
@@ -213,9 +300,10 @@ public class herramienta extends Fragment {
                 Ubicacion curUbicacion =  _ubicaciones.get(position);
                 Log.d(TAG, String.valueOf(curUbicacion.get_id()));
 
-                //subCategoria _subCategory = subCategoria.newInstance(curCatalogo);
-                // myContext.getSupportFragmentManager().beginTransaction().setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right ).replace( R.id.fragment_container,_subCategory, "Sub Categoria" ).commit();
+                curUbicacionItemSelected = position;
+                final Integer curNum = curUbicacion.get_num();
 
+                /*
                 ubicacion _ubicacion = ubicacion.newInstance(curHerramienta , curUbicacion.get_num());
 
                 FragmentManager fragmentManager = getFragmentManager();
@@ -225,6 +313,105 @@ public class herramienta extends Fragment {
                 fragmentTransaction.replace( R.id.fragment_container,_ubicacion, "Ubicacion" );
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
+*/
+
+
+                //////////////////
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( myContext );
+
+                final Integer user_id = sharedPref.getInt(common.VAR_USER_ID, 0);
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(myContext);
+                builder.setTitle("Actualizar ubicación");
+
+/////////////
+                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.cambiar_ubicacion, (ViewGroup) getView(), false);
+// Set up the input
+                final EditText input = (EditText) viewInflated.findViewById(R.id.ModalinputPassword);
+                TextView lblNumEquipo = (TextView) viewInflated.findViewById(R.id.ModalUbicacionNumEquipo);
+
+                lblNumEquipo.setText(curNum.toString());
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+
+                ///////////Spinners
+                Spinner Spinner_obras = (Spinner) viewInflated.findViewById(R.id.Modalubicacion_obra);
+                Spinner Spinner_responsables = (Spinner) viewInflated.findViewById(R.id.Modalubicacion_responsable);
+
+                Spinner_obras.setAdapter(_obrasAdapter);
+                Spinner_responsables.setAdapter(_responsablesAdapter);
+
+
+                Spinner_obras.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view,
+                                               int position, long id) {
+                        // Here you get the current item (a User object) that is selected by its position
+
+                        Obra curObra = _obrasAdapter.getItem(position);
+                        // Here you can do the action you want to...
+                        Log.d(TAG,String.valueOf(curObra.get_id()));
+
+                        _curObra = curObra.get_id();
+                        curNombreUbicacion = curObra.get_name();
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapter) {  }
+                });
+
+
+                Spinner_responsables.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view,
+                                               int position, long id) {
+                        // Here you get the current item (a User object) that is selected by its position
+
+                        Responsable curResponsable = _responsablesAdapter.getItem(position);
+                        // Here you can do the action you want to...
+                        Log.d(TAG,String.valueOf(curResponsable.get_id()));
+                        _curResponsable = curResponsable.get_id();
+                         curNombreResponsable = curResponsable.get_name();
+
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapter) {  }
+                });
+
+
+
+
+
+                //////////
+
+
+                builder.setView(viewInflated);
+
+// Set up the buttons
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        String  m_Text = input.getText().toString();
+                        new Actualizar(myContext, curHerramienta.get_id(), _curObra, _curResponsable, curNum, user_id, m_Text).execute();
+
+                    }
+                });
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                /////////////
+                builder.show();
+
+
+
+                ////////////
+
 
 
             }
@@ -316,6 +503,8 @@ public class herramienta extends Fragment {
         labelDescripcion.setText(curHerramienta.get_desc());
         // labelUbicacionAnterior.setText(curHerramienta.get_ubicacion_anterior());
 
+        Log.d(TAG,"loading images");
+
         String  curUrl = curHerramienta.get_imagelink();
 /*
         if (curUrl.length()>8) {
@@ -358,7 +547,7 @@ public class herramienta extends Fragment {
 
     }
 
-    private void handleSent2( HttpClient.HttpResponse response )
+    private void handleSentHerramienta( HttpClient.HttpResponse response )
     {
         if( response.getCode() == 200 )
         {
@@ -528,7 +717,7 @@ public class herramienta extends Fragment {
         {
             super.onPostExecute( result );
             _progressDialog.dismiss();
-            handleSent2( result );
+            handleSentHerramienta( result );
 
 
         }
@@ -544,7 +733,7 @@ public class herramienta extends Fragment {
 
     }
 
-    private void handleSent( HttpClient.HttpResponse response )
+    private void handleSentEquipos( HttpClient.HttpResponse response )
     {
         if( response.getCode() == 200 )
         {
@@ -619,6 +808,7 @@ public class herramienta extends Fragment {
         {
             _idEquipo = idEquipo;
             _context = context;
+            _ubicaciones.clear();
         }
 
         @Override
@@ -657,7 +847,7 @@ public class herramienta extends Fragment {
         {
             super.onPostExecute( result );
             _progressDialog.dismiss();
-            handleSent( result );
+            handleSentEquipos( result );
 
 
         }
@@ -665,6 +855,455 @@ public class herramienta extends Fragment {
 
 
 
-    ////////
+    //////// Modal ///////////
+
+    private void Load_Obras()
+    {
+
+
+        new ObrasLoad(myContext).execute();
+    }
+
+
+    private void handleSentObras( HttpClient.HttpResponse response )
+    {
+        if( response.getCode() == 200 )
+        {
+            try
+            {
+                JSONObject json = new JSONObject( response.getResponse() );
+                Log.d("LOGin", "resultado");
+
+
+
+                if (json.getInt("error") == 1)
+                {
+                    common.showWarningDialog("! No se pudo cargar el contenido ¡", "Favor de revisar la conexión de datos", myContext);
+                    return;
+                }
+
+                if (json.getInt("error") == 0) // No hay errores continuar
+                {
+
+                    // JSONObject catalogos = json.getJSONObject( "message" );
+                    JSONArray obras = json.getJSONArray("message");
+
+                    //Integer UserId = user.getInt("id");
+                    //Integer permiso = user.getInt("permiso");
+                    //Integer estado = user.getInt("estado");
+                    //String nombre = user.getString("nombre");
+                    //String apellidos = user.getString("apellidos");
+
+
+                    //startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+                    for (int i = 0; i < obras.length(); i++) {
+                        JSONObject row = obras.getJSONObject(i);
+                        int id = row.getInt("id");
+                        String nombre = row.getString("nombre");
+                        String desc = row.getString("desc");
+
+                        Obra newObra = new Obra();
+                        newObra.set_desc(desc);
+                        newObra.set_name(nombre);
+                        newObra.set_id(id);
+                        _obras.add(newObra);
+
+
+                    }
+                    // Spinner Obras
+                    _obrasAdapter.notifyDataSetChanged();
+
+
+                }
+
+
+                /*
+                if( json.getString( "user" ).equals( "not_exists" ) )
+                    Common.alert( this, "Vendedor no existente." );
+                else if( json.getString( "user" ).equals( "already_registered" ) )
+                    Common.alert( this, "Vendedor ya está registrado." );
+                else
+                {
+                    JSONObject user = json.getJSONObject( "user" );
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString( Common.VAR_USER_UID, user.getString( "uid" ) );
+                    editor.putString( Common.VAR_USER_NAME, user.getString( "name" ) );
+                    editor.putString( Common.VAR_USER_EMPLOYEE_NO, user.getString( "employee_no" ) );
+                    editor.putString( Common.VAR_USER_SHOP_ID, user.getString( "shop_id" ) );
+                    editor.putString( Common.VAR_USER_SHOP_NAME, user.getString( "shop_name" ) );
+                    editor.putString( Common.VAR_USER_SHOP_NUMBER, user.getString( "shop_number" ) );
+                    editor.putString( Common.VAR_USER_SHOP_RETAILER_ID, user.getString( "retailer_id" ) );
+                    editor.putString( Common.VAR_USER_SHOP_RETAILER_NAME, user.getString( "retailer_name" ) );
+                    editor.commit();
+
+                    Intent intent = new Intent( this, MainActivity.class );
+                    intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+                    intent.addFlags( Intent.FLAG_ACTIVITY_NO_ANIMATION );
+                    intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TASK );
+                    startActivity( intent );
+
+
+                }
+                */
+            }
+            catch( Exception e )
+            {
+                android.util.Log.e( "JSONParser", "Cant parse: " + e.getMessage() );
+                // Common.alert( this, "No se ha podido registrar, por favor intenta nuevamente más tarde." );
+            }
+        }
+        else {
+            //Common.alert( this, "No se ha podido registrar, por favor intenta nuevamente más tarde." );
+        }
+    }
+
+
+
+    private class ObrasLoad extends AsyncTask<Void, Void, HttpClient.HttpResponse>
+    {
+        ProgressDialog _progressDialog;
+        Context _context;
+
+        public ObrasLoad( Context context)
+        {
+            _context = context;
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            _progressDialog = ProgressDialog.show( _context, "Espera un momento..", "Obteniendo resultados..", true );
+
+
+        }
+
+        @Override
+        protected HttpClient.HttpResponse doInBackground( Void... arg0 )
+        {
+
+            JSONObject jsonParam = new JSONObject();
+
+            try {
+            }
+
+
+            catch (Exception e)
+            {
+                return null;
+            }
+
+
+            HttpClient.HttpResponse response = HttpClient.postJson( common.API_URL_BASE + "obras", jsonParam );
+            android.util.Log.d( "TEST", String.format( "HTTP CODE: %d RESPONSE: %s", response.getCode(), response.getResponse() ) );
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute( HttpClient.HttpResponse result )
+        {
+            super.onPostExecute( result );
+            _progressDialog.dismiss();
+            handleSentObras( result );
+
+
+        }
+    }
+
+///////////////
+
+
+    private void Load_Responsables()
+    {
+
+
+        new ResponsablesLoad(myContext).execute();
+    }
+
+
+    private void handleSentResponsables( HttpClient.HttpResponse response )
+    {
+        if( response.getCode() == 200 )
+        {
+            try
+            {
+                JSONObject json = new JSONObject( response.getResponse() );
+                Log.d("LOGin", "resultado");
+
+
+
+                if (json.getInt("error") == 1)
+                {
+                    common.showWarningDialog("! No se pudo cargar el contenido ¡", "Favor de revisar la conexión de datos", myContext);
+                    return;
+                }
+
+                if (json.getInt("error") == 0) // No hay errores continuar
+                {
+
+                    // JSONObject catalogos = json.getJSONObject( "message" );
+                    JSONArray Responsables = json.getJSONArray("message");
+
+                    //Integer UserId = user.getInt("id");
+                    //Integer permiso = user.getInt("permiso");
+                    //Integer estado = user.getInt("estado");
+                    //String nombre = user.getString("nombre");
+                    //String apellidos = user.getString("apellidos");
+
+
+                    //startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+                    for (int i = 0; i < Responsables.length(); i++) {
+                        JSONObject row = Responsables.getJSONObject(i);
+                        int id = row.getInt("id");
+                        String nombre = row.getString("nombre");
+                        String desc = row.getString("desc");
+
+                        Responsable newResponsable = new Responsable();
+                        newResponsable.set_desc(desc);
+                        newResponsable.set_name(nombre);
+                        newResponsable.set_id(id);
+                        _responsables.add(newResponsable);
+
+
+                    }
+                    _responsablesAdapter.notifyDataSetChanged();
+                }
+
+
+                /*
+                if( json.getString( "user" ).equals( "not_exists" ) )
+                    Common.alert( this, "Vendedor no existente." );
+                else if( json.getString( "user" ).equals( "already_registered" ) )
+                    Common.alert( this, "Vendedor ya está registrado." );
+                else
+                {
+                    JSONObject user = json.getJSONObject( "user" );
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString( Common.VAR_USER_UID, user.getString( "uid" ) );
+                    editor.putString( Common.VAR_USER_NAME, user.getString( "name" ) );
+                    editor.putString( Common.VAR_USER_EMPLOYEE_NO, user.getString( "employee_no" ) );
+                    editor.putString( Common.VAR_USER_SHOP_ID, user.getString( "shop_id" ) );
+                    editor.putString( Common.VAR_USER_SHOP_NAME, user.getString( "shop_name" ) );
+                    editor.putString( Common.VAR_USER_SHOP_NUMBER, user.getString( "shop_number" ) );
+                    editor.putString( Common.VAR_USER_SHOP_RETAILER_ID, user.getString( "retailer_id" ) );
+                    editor.putString( Common.VAR_USER_SHOP_RETAILER_NAME, user.getString( "retailer_name" ) );
+                    editor.commit();
+
+                    Intent intent = new Intent( this, MainActivity.class );
+                    intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+                    intent.addFlags( Intent.FLAG_ACTIVITY_NO_ANIMATION );
+                    intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TASK );
+                    startActivity( intent );
+
+
+                }
+                */
+            }
+            catch( Exception e )
+            {
+                android.util.Log.e( "JSONParser", "Cant parse: " + e.getMessage() );
+                // Common.alert( this, "No se ha podido registrar, por favor intenta nuevamente más tarde." );
+            }
+        }
+        else {
+            //Common.alert( this, "No se ha podido registrar, por favor intenta nuevamente más tarde." );
+        }
+    }
+
+
+
+    private class ResponsablesLoad extends AsyncTask<Void, Void, HttpClient.HttpResponse>
+    {
+        ProgressDialog _progressDialog;
+        Context _context;
+
+        public ResponsablesLoad( Context context)
+        {
+            _context = context;
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            _progressDialog = ProgressDialog.show( _context, "Espera un momento..", "Obteniendo resultados..", true );
+
+
+        }
+
+        @Override
+        protected HttpClient.HttpResponse doInBackground( Void... arg0 )
+        {
+
+            JSONObject jsonParam = new JSONObject();
+
+            try {
+            }
+
+
+            catch (Exception e)
+            {
+                return null;
+            }
+
+
+            HttpClient.HttpResponse response = HttpClient.postJson( common.API_URL_BASE + "responsables", jsonParam );
+            android.util.Log.d( "TEST", String.format( "HTTP CODE: %d RESPONSE: %s", response.getCode(), response.getResponse() ) );
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute( HttpClient.HttpResponse result )
+        {
+            super.onPostExecute( result );
+            _progressDialog.dismiss();
+            handleSentResponsables( result );
+
+
+        }
+    }
+
+////////////////
+
+    private void handleSentActualizar( HttpClient.HttpResponse response )
+    {
+        if( response.getCode() == 200 )
+        {
+            try
+            {
+                JSONObject json = new JSONObject( response.getResponse() );
+                Log.d("Actualizar", "resultado");
+
+                ////////
+                if (json.getInt("error") == 1)
+                {
+                    common.showWarningDialog("! No se pudo actualizar ¡", "Favor de confirmar los datos", myContext);
+                    return;
+                }
+
+                if (json.getInt("error") == 0) // No hay errores continuar
+                {
+                    //getActivity().onBackPressed();
+                   // getFragmentManager().popBackStack();
+                    //new EquiposLoad(myContext, curHerramienta.get_id()).execute();
+                    _ubicaciones.get(curUbicacionItemSelected).set_responsable(curNombreResponsable);
+                    _ubicaciones.get(curUbicacionItemSelected).set_ubicacion(curNombreUbicacion);
+                    _adapter.notifyDataSetChanged();
+
+                    common.showWarningDialog("! Actualizar ¡", "Actualización exitosa", myContext);
+
+
+
+                }
+
+
+                ///////////
+
+
+
+
+
+
+
+
+            }
+            catch( Exception e )
+            {
+                android.util.Log.e( "JSONParser", "Cant parse: " + e.getMessage() );
+                common.showWarningDialog("! No valido ¡", "No se pudo actualizar", myContext);
+            }
+        }
+        else {
+            //Common.alert( this, "No se ha podido registrar, por favor intenta nuevamente más tarde." );
+        }
+    }
+
+
+    private class Actualizar extends AsyncTask<Void, Void, HttpClient.HttpResponse>
+    {
+        ProgressDialog _progressDialog;
+
+        Integer id_herramienta;
+        Integer id_obra;
+        Integer id_responsable;
+        Integer id_usuario;
+        Integer num_Equipo;
+        String cur_pass;
+        Context context;
+
+
+
+        public Actualizar( Context _context, Integer idHerramienta,Integer idObra, Integer idResponsable, Integer numEquipo,Integer idUsuario, String curpass )
+        {
+            id_herramienta = idHerramienta;
+            id_obra = idObra;
+            id_responsable = idResponsable;
+            id_usuario = idUsuario;
+            num_Equipo = numEquipo;
+            context = _context;
+            cur_pass = curpass;
+
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            _progressDialog = ProgressDialog.show( context, "Espera un momento..", "Actualizando..", true );
+
+
+        }
+
+        @Override
+        protected HttpClient.HttpResponse doInBackground( Void... arg0 )
+        {
+
+            JSONObject jsonParam = new JSONObject();
+
+            try {
+
+
+                jsonParam.put("id_herramienta", id_herramienta);
+                jsonParam.put("id_obra", id_obra);
+                jsonParam.put("id_responsable", id_responsable);
+                jsonParam.put("id_usuario", id_usuario);
+                jsonParam.put("no_equipo", num_Equipo);
+                jsonParam.put("user_pass", cur_pass);
+
+            }
+
+
+            catch (Exception e)
+            {
+                return null;
+            }
+
+
+            HttpClient.HttpResponse response = HttpClient.postJson( common.API_URL_BASE + "actualizarUbicacion", jsonParam );
+            android.util.Log.d( "TEST", String.format( "HTTP CODE: %d RESPONSE: %s", response.getCode(), response.getResponse() ) );
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute( HttpClient.HttpResponse result )
+        {
+            super.onPostExecute( result );
+            _progressDialog.dismiss();
+            handleSentActualizar( result );
+
+
+        }
+    }
+
+
+
+    ////// Modal /////////////
 
 }
