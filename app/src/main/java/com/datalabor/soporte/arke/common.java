@@ -17,10 +17,10 @@ public class common {
 
     private static int _curPage = 0;
 
-    //public static final String API_URL_BASE = "http://104.131.34.72/backend/arke/public/api/";
+    public static final String API_URL_BASE = "http://104.131.34.72/backend/arke/public/api/";
    // public static final String API_URL_BASE = "http://192.168.15.20/arke/public/api/";
     //public static final String API_URL_BASE = "http://192.168.1.69/arke/public/api/";
-    public static final String API_URL_BASE = "http://192.168.0.17/arke/public/api/";
+    //public static final String API_URL_BASE = "http://192.168.0.17/arke/public/api/";
 
 
     public static final String VAR_USER_ID = "USER_ID";
