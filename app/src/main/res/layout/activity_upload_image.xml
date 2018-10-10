@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.uploadImage">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="end"
+            android:background="@android:color/white">
+
+            <ImageButton
+                android:id="@+id/btnClose"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:src="@drawable/icon_close"
+                android:background="@android:color/transparent"/>
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:padding="10dp"
+            android:background="@color/grisArke3"/>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <TextView
+        style="@style/NormalBlackField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:text="Subir Imagen a Servidor:"
+        />
+</LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/ImageToUpload"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:padding="10dp"/>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="60dp"></LinearLayout>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+
+        <Button
+            android:id="@+id/btnUpload"
+            android:background="@drawable/button2"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="Subir"
+            android:textColor="@android:color/white"
+            android:textSize="22dp"/>
+
+
+</LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+
+
+
+</android.support.constraint.ConstraintLayout>

@@ -1,18 +1,27 @@
 package com.datalabor.soporte.arke.fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,7 +39,9 @@ import android.widget.Spinner;
 import android.widget.TextClock;
 import android.widget.TextView;
 
+import com.datalabor.soporte.arke.BuildConfig;
 import com.datalabor.soporte.arke.R;
+import com.datalabor.soporte.arke.activity.uploadImage;
 import com.datalabor.soporte.arke.adapters.MyPageAdapter;
 import com.datalabor.soporte.arke.adapters.Obras_SpinnerAdapter;
 import com.datalabor.soporte.arke.adapters.Responsables_SpinnerAdapter;
@@ -44,16 +55,23 @@ import com.datalabor.soporte.arke.models.Responsable;
 import com.datalabor.soporte.arke.models.Ubicacion;
 import com.datalabor.soporte.arke.utils.CircleIndicator;
 import com.datalabor.soporte.arke.utils.HttpClient;
+import com.datalabor.soporte.arke.utils.ImageUtils;
 import com.squareup.picasso.Picasso;
 
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+
+import static com.datalabor.soporte.arke.utils.ImageUtils.createImageFile;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,6 +93,7 @@ public class herramienta extends Fragment {
 
     private ImageButton cameraButton;
     private ImageButton galeriaButton;
+    private ImageButton refreshButton;
     private Button mantenimientosButton;
 
     private TextView labelClave;
@@ -123,6 +142,15 @@ public class herramienta extends Fragment {
     private String curNombreUbicacion = "";
 
 
+
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int REQUEST_PICKER_IMAGE = 102;
+    private static final int REQUEST_CAMERA = 101;
+
+    String imageURL;
+
+    private static final String AUTHORITY = BuildConfig.APPLICATION_ID+".provider";
+
     public herramienta() {
         // Required empty public constructor
     }
@@ -169,6 +197,8 @@ public class herramienta extends Fragment {
 
         cameraButton = (ImageButton) _view.findViewById(R.id.btnCamera);
         galeriaButton = (ImageButton) _view.findViewById(R.id.btnGaleria);
+        refreshButton = (ImageButton) _view.findViewById(R.id.btnRefresh);
+
         mantenimientosButton = (Button) _view.findViewById(R.id.btnMantenimientos);
 
        // fotoImage = (ImageView) _view.findViewById(R.id.image_herramienta);
@@ -192,16 +222,68 @@ public class herramienta extends Fragment {
         _responsablesAdapter.setDropDownViewResource(R.layout.spinner_item);
 
 
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Load_Herramienta();
 
+                _obras = new ArrayList<>();
+                Load_Obras();
 
-        cameraButton.setOnClickListener(new View.OnClickListener() {
+                _responsables = new ArrayList<>();
+                Load_Responsables();
+
+            }
+        });
+
+                cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG,"camara");
 
+                /////////
+
+                if (ContextCompat.checkSelfPermission(myContext, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(myContext,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(myContext,
+                            new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
+                } else {
+
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    File file = null;
+                    try {
+                        file = createImageFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.e("error al crear: ", "imagen");
+                        //Toast.makeText(NoteCreationActivity.this,"No se pudo crear Imagen",Toast.LENGTH_SHORT).show();
+                    }
+                    try {
+
+
+                        //Uri outputFileUri = Uri.fromFile(file);
+                        //Uri outputFileUri = Uri.parse(file.getAbsolutePath());
+                       //Uri contentUri = FileProvider.getUriForFile(getContext(), "com.mydomain.fileprovider", newFile);
+                        Uri outputFileUri = FileProvider.getUriForFile(myContext, AUTHORITY , file);
+
+
+                        String path = outputFileUri.toString();
+                        imageURL = path;
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+                        startActivityForResult(intent, REQUEST_CAMERA);
+                    } catch (Exception e) {
+                        Log.e("ERROR ", "  " + e);
+                    }
+
+
+                }
 
 
 
+///////////////
             }
 
         });
@@ -212,6 +294,12 @@ public class herramienta extends Fragment {
             public void onClick(View v) {
 
                 Log.d(TAG,"galeria");
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+
+                startActivityForResult(Intent.createChooser(intent, "Selecciona la imagén"), REQUEST_PICKER_IMAGE);
+
 
 
             }
@@ -494,6 +582,105 @@ public class herramienta extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+// perform your action here
+        //Bitmap bitmap = null;
+        ////////////
+
+        if (resultCode == Activity.RESULT_OK) {
+
+            if (requestCode == REQUEST_CAMERA) {
+                Log.d(TAG, "Received Camera");
+
+                Uri uri = Uri.parse(imageURL);
+
+/*
+                try {
+                    bitmap = ImageUtils.decodeUriIntoBitmap(myContext, uri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+*/
+
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( myContext );
+
+                final Integer user_id = sharedPref.getInt(common.VAR_USER_ID, 0);
+                Intent intent = new Intent();
+
+
+                //intent2.setClass(context, VisitsActivity.class);
+                intent.setClass(myContext, uploadImage.class);
+                intent.putExtra("imageUrl", imageURL);
+                intent.putExtra("user_id", user_id);
+                startActivity(intent);
+
+
+
+
+
+            } else if (requestCode == REQUEST_PICKER_IMAGE) {
+                Log.d(TAG, "Received Gallery");
+                // Get the picked user picture
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( myContext );
+                final Integer user_id = sharedPref.getInt(common.VAR_USER_ID, 0);
+
+
+
+                Uri pickedImageURI = data.getData();
+                String path = pickedImageURI.toString();
+
+
+                Intent intent = new Intent();
+                //intent2.setClass(context, VisitsActivity.class);
+                intent.setClass(myContext, uploadImage.class);
+                intent.putExtra("imageUrl", path);
+                intent.putExtra("user_id", user_id);
+
+                startActivity(intent);
+
+
+
+                /////
+/*
+
+
+                // Set the picked user picture in the bitmap variable
+                try {
+
+                    bitmap = ImageUtils.getCorrectlyOrientedImage(this, pickedImageURI);
+//					userPhotoBitmap = decodeUriIntoBitmap(pickedImageURI);
+
+                } catch (FileNotFoundException e1) {
+                } catch (IOException e) {
+                } catch (NullPointerException e) {
+                    // TODO: handle exception
+                    return;
+                }
+                imagesURLS.add(path);
+                //notSentImages.add(bitmap);
+
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("Tipo", "Bitmap");
+                map.put("Objecto", path);
+                objectsItems.add(map);
+
+                mAdapter.notifyDataSetChanged();
+
+                // Set the picked user picture in the image view
+
+                */
+            }
+        }
+
+        ///////////////
+
+
+
+    }
+
     private void LoadValues()
     {
         labelClave.setText(curHerramienta.get_clave());
@@ -519,6 +706,7 @@ public class herramienta extends Fragment {
         }
 */
        ArrayList<String> images = curHerramienta.get_images();
+       fList.clear();
         for (String curImage: images)
         {
 
@@ -669,6 +857,7 @@ public class herramienta extends Fragment {
 
 
 
+
     private class HerramientaLoad extends AsyncTask<Void, Void, HttpClient.HttpResponse>
     {
         ProgressDialog _progressDialog;
@@ -728,9 +917,7 @@ public class herramienta extends Fragment {
 
     private void Load_Equipos()
     {
-
         new EquiposLoad(myContext, curHerramienta.get_id()).execute();
-
     }
 
     private void handleSentEquipos( HttpClient.HttpResponse response )

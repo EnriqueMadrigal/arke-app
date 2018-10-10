@@ -1,8 +1,11 @@
 package com.datalabor.soporte.arke.activity;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,6 +20,11 @@ import android.view.MenuItem;
 import com.datalabor.soporte.arke.R;
 import com.datalabor.soporte.arke.common;
 import com.datalabor.soporte.arke.fragments.mainf;
+import com.datalabor.soporte.arke.utils.ImageUtils;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
 
     private final  String TAG ="MainActivity";
 
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int REQUEST_PICKER_IMAGE = 102;
+    private static final int REQUEST_CAMERA = 101;
+
+    String imageURL;
 
 
     @Override
@@ -143,4 +156,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-}
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+       }
+    }
