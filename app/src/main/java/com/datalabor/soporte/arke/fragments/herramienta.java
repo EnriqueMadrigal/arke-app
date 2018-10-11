@@ -94,6 +94,8 @@ public class herramienta extends Fragment {
     private ImageButton cameraButton;
     private ImageButton galeriaButton;
     private ImageButton refreshButton;
+    private ImageButton lupaButton;
+
     private Button mantenimientosButton;
 
     private TextView labelClave;
@@ -198,6 +200,7 @@ public class herramienta extends Fragment {
         cameraButton = (ImageButton) _view.findViewById(R.id.btnCamera);
         galeriaButton = (ImageButton) _view.findViewById(R.id.btnGaleria);
         refreshButton = (ImageButton) _view.findViewById(R.id.btnRefresh);
+        lupaButton = (ImageButton) _view.findViewById(R.id.btnLupa);
 
         mantenimientosButton = (Button) _view.findViewById(R.id.btnMantenimientos);
 
@@ -221,6 +224,65 @@ public class herramienta extends Fragment {
         _responsablesAdapter = new Responsables_SpinnerAdapter(myContext, R.layout.spinner_item, _responsables);
         _responsablesAdapter.setDropDownViewResource(R.layout.spinner_item);
 
+
+        lupaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//--------------
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(myContext);
+                builder.setTitle("Ver Imagen");
+
+/////////////
+                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.ver_imagen, (ViewGroup) getView(), false);
+// Set up the input
+               ImageView imageHerramienta = (ImageView) viewInflated.findViewById(R.id.imageHerramienta);
+                Integer curPage = mPager.getCurrentItem();
+
+                ArrayList<String> images = curHerramienta.get_images();
+                if (images.size()>=1)
+                {
+
+                    String curImage = images.get(curPage);
+
+                    if (curImage.length()>8)
+                    {
+
+                        Picasso.with(myContext)
+                                .load(curImage)
+                                .placeholder(R.drawable.image_notavailable)
+                                .into(imageHerramienta);
+
+                    }
+
+
+                }
+
+
+                //////////
+
+
+                builder.setView(viewInflated);
+
+// Set up the buttons
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                    }
+                });
+
+
+                /////////////
+                builder.show();
+
+
+
+//-----------
+
+            }
+        });
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -614,7 +676,9 @@ public class herramienta extends Fragment {
                 //intent2.setClass(context, VisitsActivity.class);
                 intent.setClass(myContext, uploadImage.class);
                 intent.putExtra("imageUrl", imageURL);
-                intent.putExtra("user_id", user_id);
+                intent.putExtra("id_usuario", user_id);
+                intent.putExtra("id_herramienta", id_herramienta);
+
                 startActivity(intent);
 
 
@@ -628,7 +692,6 @@ public class herramienta extends Fragment {
                 final Integer user_id = sharedPref.getInt(common.VAR_USER_ID, 0);
 
 
-
                 Uri pickedImageURI = data.getData();
                 String path = pickedImageURI.toString();
 
@@ -637,7 +700,9 @@ public class herramienta extends Fragment {
                 //intent2.setClass(context, VisitsActivity.class);
                 intent.setClass(myContext, uploadImage.class);
                 intent.putExtra("imageUrl", path);
-                intent.putExtra("user_id", user_id);
+                intent.putExtra("id_usuario", user_id);
+                intent.putExtra("id_herramienta", id_herramienta);
+
 
                 startActivity(intent);
 

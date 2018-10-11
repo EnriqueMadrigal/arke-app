@@ -39,6 +39,7 @@ public class uploadImage extends AppCompatActivity {
 
     private String ImageUrl;
     private Integer curIdUsuario=0;
+    private Integer curHerramientaId=0;
     Bitmap bitmap = null;
 
     @Override
@@ -66,7 +67,7 @@ public class uploadImage extends AppCompatActivity {
                 String base64Bitmap  = ImageUtils.getImage64(newBitmap);
 
 
-            new AgregarImagen(context ,curIdUsuario, base64Bitmap).execute();
+            new AgregarImagen(context , curHerramientaId, curIdUsuario, base64Bitmap).execute();
 
 
            }
@@ -108,6 +109,14 @@ public class uploadImage extends AppCompatActivity {
 
         }
 
+
+
+
+        if (getIntent().hasExtra("id_herramienta")) {
+
+            curHerramientaId = (Integer) getIntent().getExtras().getInt("id_herramienta");
+
+        }
 
 
         Uri uri = Uri.parse(ImageUrl);
@@ -188,18 +197,19 @@ public class uploadImage extends AppCompatActivity {
     private class AgregarImagen extends AsyncTask<Void, Void, HttpClient.HttpResponse>
     {
         ProgressDialog _progressDialog;
-
+        Integer id_herramienta;
         Integer id_usuario;
         String cur_image;
         Context context;
 
 
 
-        public AgregarImagen( Context _context, Integer idUsuario, String convertedImage )
+        public AgregarImagen( Context _context, Integer idHerramienta ,Integer idUsuario, String convertedImage )
         {
             id_usuario = idUsuario;
             cur_image = convertedImage;
             context = _context;
+            id_herramienta = idHerramienta;
 
 
         }
@@ -221,9 +231,9 @@ public class uploadImage extends AppCompatActivity {
 
             try {
 
-
+                jsonParam.put("id_herramienta", id_herramienta);
                 jsonParam.put("id_usuario", id_usuario);
-                jsonParam.put("imge_64", cur_image);
+                jsonParam.put("image_64", cur_image);
 
             }
 
