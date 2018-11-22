@@ -1,6 +1,7 @@
 package com.datalabor.soporte.arke.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,11 +26,19 @@ import com.datalabor.soporte.arke.utils.ImageUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import android.support.design.widget.NavigationView;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     mainf MainFragment;
+    public NavigationView navView;
+    public DrawerLayout drawerLayout;
+    private boolean _isSearchVisible = false;
 
     private final  String TAG ="MainActivity";
 
@@ -52,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        navView = (NavigationView)findViewById(R.id.navview);
 
 
        // getSupportActionBar().setHomeAsUpIndicator(R.drawable.icon_back_off);
@@ -60,6 +71,48 @@ public class MainActivity extends AppCompatActivity {
         MainFragment = new mainf();
         getSupportFragmentManager().beginTransaction().setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right ).replace( R.id.fragment_container, MainFragment, "HOME" ).commit();
 
+
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.iconohamburguesa);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setTitle( "" );
+
+        navView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+
+                        switch (menuItem.getItemId()) {
+
+                            case R.id.menu_home:
+
+
+
+                                break;
+
+                            case R.id.menu_actualizar:
+
+                                break;
+
+                            case R.id.menu_acerca:
+
+
+                                break;
+
+
+                            case R.id.menu_salir:
+                            confirmLogout();
+                                break;
+
+
+                        }
+
+                        drawerLayout.closeDrawers();
+
+                        return true;
+                    }
+                });
 
 
 
@@ -99,15 +152,15 @@ public class MainActivity extends AppCompatActivity {
             */
 
             case android.R.id.home:
-            Log.d("main","back pressed");
-                manageFragments();
+                drawerLayout.openDrawer(GravityCompat.START);
+
                 return true;
 
 
 
-            case R.id.go_logout:
-
-                confirmLogout();
+            case R.id.go_search:
+                handleSearch();
+               // confirmLogout();
                 return true;
 
 
@@ -116,7 +169,63 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+// search
+private void handleSearch()
+{
+    RelativeLayout pnlSearch = (RelativeLayout) toolbar.findViewById(R.id.pnlSearch);
+    EditText txtSearch = (EditText) toolbar.findViewById( R.id.txtSearch );
+    if( pnlSearch.getVisibility() == View.GONE )
+    {
+        _isSearchVisible = true;
+        getSupportActionBar().setDisplayUseLogoEnabled( false );
+        pnlSearch.setVisibility( View.VISIBLE );
+        txtSearch.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService( Context.INPUT_METHOD_SERVICE );
+        imm.showSoftInput( txtSearch, InputMethodManager.SHOW_IMPLICIT );
 
+    }
+    else
+    {
+        search();
+    }
+}
+
+
+    private void search()
+    {
+        closeSearch();
+        EditText txtSearch = (EditText) toolbar.findViewById( R.id.txtSearch );
+        String search = txtSearch.getText().toString().trim();
+        txtSearch.setText( "" );
+        if( search.length() > 0 )
+        {
+         Log.d(TAG, "searching");
+
+        }
+    }
+///////
+
+    private void onClearSearchText()
+    {
+        EditText txtSearch = (EditText) toolbar.findViewById( R.id.txtSearch );
+        txtSearch.setText( "" );
+    }
+///////////
+
+    private void closeSearch()
+    {
+        _isSearchVisible = false;
+        getSupportActionBar().setDisplayUseLogoEnabled( true );
+        RelativeLayout pnlSearch = (RelativeLayout) toolbar.findViewById( R.id.pnlSearch );
+        EditText txtSearch = (EditText) toolbar.findViewById( R.id.txtSearch );
+        InputMethodManager imm = (InputMethodManager) getSystemService( Context.INPUT_METHOD_SERVICE );
+        imm.hideSoftInputFromWindow( txtSearch.getWindowToken(), 0 );
+        pnlSearch.setVisibility( View.GONE );
+    }
+
+
+
+    /////
     public void confirmLogout()
     {
         new AlertDialog.Builder( this )

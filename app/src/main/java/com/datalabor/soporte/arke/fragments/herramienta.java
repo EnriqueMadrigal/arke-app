@@ -782,8 +782,8 @@ public class herramienta extends Fragment {
 
         if (images.size()==0)
         {
-            fList.add(banner_image_class_resource.newInstance(R.drawable.image_notavailable));
-        }
+                  fList.add(banner_image_class_resource.newInstance(R.drawable.image_notavailable));
+    }
 
         myPageAdapter.notifyDataSetChanged();
 
