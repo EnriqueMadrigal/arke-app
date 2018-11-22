@@ -6,8 +6,8 @@
 
 
     <item
-        android:id="@+id/go_logout"
-        android:icon="@drawable/icon_exit_off"
+        android:id="@+id/go_search"
+        android:icon="@drawable/icon_search"
         android:title="Menu"
         app:showAsAction="ifRoom"/>
 

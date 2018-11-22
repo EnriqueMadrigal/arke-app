@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_below="@+id/include"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true">
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarMain"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/toolbar_height"
+        app:titleTextColor="@android:color/white"
+        android:background="@color/rojoArke1"
+        android:theme="@style/Theme.FixedSize">
+
+
+        <RelativeLayout
+            android:id="@+id/pnlSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageButton
+                android:id="@+id/btnClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/transparent"
+                android:padding="0dp"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"/>
+
+
+            <EditText
+                android:id="@+id/txtSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/btnClear"
+                android:background="@color/transparent"
+                android:textColor="@color/white"
+                android:hint="Buscar"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"/>
+
+
+
+        </RelativeLayout>
+
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/toolbar_image_height"
+            android:layout_gravity="center"
+            android:src = "@drawable/banner_arke"/>
+
+
+
+
+    </android.support.v7.widget.Toolbar>
+
+
+
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+
+
+
+
+        <FrameLayout android:id="@+id/fragment_container"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>
