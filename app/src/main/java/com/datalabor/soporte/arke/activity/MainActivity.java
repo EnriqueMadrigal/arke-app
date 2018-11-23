@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -15,11 +17,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.datalabor.soporte.arke.R;
 import com.datalabor.soporte.arke.common;
+import com.datalabor.soporte.arke.fragments.acercade;
+import com.datalabor.soporte.arke.fragments.actualizar;
+import com.datalabor.soporte.arke.fragments.busquedaxobras;
+import com.datalabor.soporte.arke.fragments.busquedaxresponsable;
 import com.datalabor.soporte.arke.fragments.mainf;
 import com.datalabor.soporte.arke.utils.ImageUtils;
 
@@ -30,7 +37,9 @@ import android.support.design.widget.NavigationView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,25 +86,67 @@ public class MainActivity extends AppCompatActivity {
 
         setTitle( "" );
 
+
+
         navView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
                         switch (menuItem.getItemId()) {
 
                             case R.id.menu_home:
+                                fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
+                            break;
+
+                            case R.id.menu_obra:
+
+
+                                busquedaxobras _busquedaxobras = busquedaxobras.newInstance();
+
+
+                                fragmentTransaction.setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right );
+                                fragmentTransaction.replace( R.id.fragment_container,_busquedaxobras, "User Options" );
+                                fragmentTransaction.addToBackStack(null);
+                                fragmentTransaction.commit();
 
 
                                 break;
 
+                            case R.id.menu_persona:
+
+                                busquedaxresponsable _busquedaxresponsable = busquedaxresponsable.newInstance();
+
+                                fragmentTransaction.setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right );
+                                fragmentTransaction.replace( R.id.fragment_container,_busquedaxresponsable, "User Options" );
+                                fragmentTransaction.addToBackStack(null);
+                                fragmentTransaction.commit();
+
+
+                                break;
+
+
                             case R.id.menu_actualizar:
+
+                                actualizar _actualizar = actualizar.newInstance();
+                                fragmentTransaction.setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right );
+                                fragmentTransaction.replace( R.id.fragment_container,_actualizar, "Acerca de" );
+                                fragmentTransaction.addToBackStack(null);
+                                fragmentTransaction.commit();
 
                                 break;
 
                             case R.id.menu_acerca:
+
+                                acercade _acercade = acercade.newInstance();
+
+                                fragmentTransaction.setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right );
+                                fragmentTransaction.replace( R.id.fragment_container,_acercade, "Acerca de" );
+                                fragmentTransaction.addToBackStack(null);
+                                fragmentTransaction.commit();
 
 
                                 break;
@@ -114,6 +165,21 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        ImageButton btnClear = (ImageButton) toolbar.findViewById(R.id.btnClear);
+        EditText txtSearch = (EditText) toolbar.findViewById(R.id.txtSearch);
+        btnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClearSearchText();
+            }
+        });
+        txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                search();
+                return true;
+            }
+        });
 
 
     }
@@ -199,7 +265,7 @@ private void handleSearch()
         txtSearch.setText( "" );
         if( search.length() > 0 )
         {
-         Log.d(TAG, "searching");
+         Log.d(TAG, "searching: " + search);
 
         }
     }

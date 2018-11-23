@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single"
-        android:id="@+id/group1">
+        android:id="@+id/group0">
 
 
 
@@ -14,7 +14,28 @@
     </group>
 
     <group android:checkableBehavior="single"
+        android:id="@+id/group1">
+
+        <item
+            android:id="@+id/menu_obra"
+            android:icon="@drawable/icon_site_off"
+            android:title="Herramientas en Obra"/>
+    </group>
+
+
+    <group android:checkableBehavior="single"
         android:id="@+id/group2">
+
+        <item
+            android:id="@+id/menu_persona"
+            android:icon="@drawable/icon_home_off"
+            android:title="Herramientas por Respo."/>
+    </group>
+
+
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/group3">
 
         <item
             android:id="@+id/menu_actualizar"
@@ -23,7 +44,7 @@
     </group>
 
     <group android:checkableBehavior="single"
-        android:id="@+id/group3">
+        android:id="@+id/group4">
 
         <item
             android:id="@+id/menu_acerca"
@@ -34,7 +55,7 @@
 
 
     <group android:checkableBehavior="single"
-        android:id="@+id/group4">
+        android:id="@+id/group5">
 
         <item
             android:id="@+id/menu_salir"

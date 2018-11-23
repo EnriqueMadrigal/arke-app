@@ -98,8 +98,9 @@ public class subCategoria extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        curCatalogo = (Catalogo) getArguments().getSerializable("curCatalogo");
+        if (getArguments() != null) {
+            curCatalogo = (Catalogo) getArguments().getSerializable("curCatalogo");
+        }
 
     }
 
