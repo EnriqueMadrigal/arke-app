@@ -28,7 +28,7 @@
 
         <item
             android:id="@+id/menu_persona"
-            android:icon="@drawable/icon_home_off"
+            android:icon="@drawable/icon_work_off"
             android:title="Herramientas por Respo."/>
     </group>
 
@@ -39,7 +39,7 @@
 
         <item
             android:id="@+id/menu_actualizar"
-            android:icon="@drawable/icon_home_off"
+            android:icon="@drawable/icon_refresh2_off"
             android:title="Actualizar"/>
     </group>
 
@@ -48,7 +48,7 @@
 
         <item
             android:id="@+id/menu_acerca"
-            android:icon="@drawable/icon_home_off"
+            android:icon="@drawable/icon_about_off"
             android:title="Acerca"/>
 
     </group>
@@ -59,7 +59,7 @@
 
         <item
             android:id="@+id/menu_salir"
-            android:icon="@drawable/icon_home_off"
+            android:icon="@drawable/icon_exit_off"
             android:title="Cerrar sesión"/>
 
     </group>

@@ -461,8 +461,8 @@ public class busquedaxobras extends Fragment {
                 return null;
             }
 
-            Log.d(TAG,common.API_URL_BASE + "getHerramientaTipo/" + String.valueOf(_curObra));
-            HttpClient.HttpResponse response = HttpClient.postJson( common.API_URL_BASE + "getHerramientaTipo/" + String.valueOf(_curObra), jsonParam );
+            Log.d(TAG,common.API_URL_BASE + "getHerramientaResponsable/" + String.valueOf(_curObra));
+            HttpClient.HttpResponse response = HttpClient.postJson( common.API_URL_BASE + "getHerramientaObra/" + String.valueOf(_curObra), jsonParam );
             android.util.Log.d( "TEST", String.format( "HTTP CODE: %d RESPONSE: %s", response.getCode(), response.getResponse() ) );
 
             return response;

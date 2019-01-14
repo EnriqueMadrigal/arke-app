@@ -1,12 +1,14 @@
 package com.datalabor.soporte.arke.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,10 +30,14 @@ import com.datalabor.soporte.arke.fragments.actualizar;
 import com.datalabor.soporte.arke.fragments.busquedaxobras;
 import com.datalabor.soporte.arke.fragments.busquedaxresponsable;
 import com.datalabor.soporte.arke.fragments.mainf;
+import com.datalabor.soporte.arke.fragments.resultados;
+import com.datalabor.soporte.arke.models.Herramienta_Simple;
+import com.datalabor.soporte.arke.utils.HttpClient;
 import com.datalabor.soporte.arke.utils.ImageUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import android.support.design.widget.NavigationView;
 import android.view.View;
@@ -40,6 +46,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA = 101;
 
     String imageURL;
+
+    private ArrayList<Herramienta_Simple> _herramientas;
 
 
     @Override
@@ -267,6 +278,9 @@ private void handleSearch()
         {
          Log.d(TAG, "searching: " + search);
 
+            _herramientas = new ArrayList<>();
+            new HerramientasLoad(this, search).execute();
+
         }
     }
 ///////
@@ -336,4 +350,147 @@ private void handleSearch()
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
        }
+
+
+
+
+    private void handleSent2( HttpClient.HttpResponse response )
+    {
+        if( response.getCode() == 200 )
+        {
+            try
+            {
+                JSONObject json = new JSONObject( response.getResponse() );
+                Log.d("LOGin", "resultado");
+
+
+
+                if (json.getInt("error") == 1)
+                {
+                    common.showWarningDialog("! No se pudo cargar el contenido ¡", "Favor de revisar la conexión de datos", this);
+                    return;
+                }
+
+                if (json.getInt("error") == 0) // No hay errores continuar
+                {
+
+                    // JSONObject catalogos = json.getJSONObject( "message" );
+                    JSONArray catalogos = json.getJSONArray("message");
+
+                    //Integer UserId = user.getInt("id");
+                    //Integer permiso = user.getInt("permiso");
+                    //Integer estado = user.getInt("estado");
+                    //String nombre = user.getString("nombre");
+                    //String apellidos = user.getString("apellidos");
+
+
+                    //startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+                    for (int i = 0; i < catalogos.length(); i++) {
+                        JSONObject row = catalogos.getJSONObject(i);
+                        int id = row.getInt("id");
+                        String link = row.getString("image");
+                        String desc = row.getString("desc");
+                        String clave = row.getString("clave");
+                        // String ubicacion = row.getString("ubicacion");
+
+
+                        Herramienta_Simple cat = new Herramienta_Simple();
+                        cat.set_desc(desc);
+                        cat.set_id(id);
+                        cat.set_imagelink(link);
+                        cat.set_clave(clave);
+                        //cat.set_ubicacion(ubicacion);
+                        _herramientas.add(cat);
+
+                    }
+
+
+                }
+
+
+                //Cargar el fragment con los resultados
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                resultados _resultados = resultados.newInstance("Resultados de la busqueda", _herramientas);
+                fragmentTransaction.setCustomAnimations( android.R.anim.slide_in_left, android.R.anim.slide_out_right );
+                fragmentTransaction.replace( R.id.fragment_container,_resultados, "User Options" );
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+
+
+
+
+
+            }
+            catch( Exception e )
+            {
+                android.util.Log.e( "JSONParser", "Cant parse: " + e.getMessage() );
+                // Common.alert( this, "No se ha podido registrar, por favor intenta nuevamente más tarde." );
+            }
+        }
+        else {
+            //Common.alert( this, "No se ha podido registrar, por favor intenta nuevamente más tarde." );
+        }
     }
+
+
+
+    private class HerramientasLoad extends AsyncTask<Void, Void, HttpClient.HttpResponse>
+    {
+        ProgressDialog _progressDialog;
+        Context _context;
+       String _busqueda;
+
+        public HerramientasLoad( Context context ,String busqueda )
+        {
+            _busqueda = busqueda;
+            _context = context;
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            _progressDialog = ProgressDialog.show( _context, "Espera un momento..", "Obteniendo resultados..", true );
+
+
+        }
+
+        @Override
+        protected HttpClient.HttpResponse doInBackground( Void... arg0 )
+        {
+
+            JSONObject jsonParam = new JSONObject();
+
+            try {
+            }
+
+
+            catch (Exception e)
+            {
+                return null;
+            }
+
+            Log.d(TAG,common.API_URL_BASE + "getHerramientaBusqueda/" + _busqueda);
+            HttpClient.HttpResponse response = HttpClient.postJson( common.API_URL_BASE + "getHerramientaBusqueda/" + _busqueda, jsonParam );
+            android.util.Log.d( "TEST", String.format( "HTTP CODE: %d RESPONSE: %s", response.getCode(), response.getResponse() ) );
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute( HttpClient.HttpResponse result )
+        {
+            super.onPostExecute( result );
+            _progressDialog.dismiss();
+            handleSent2( result );
+
+
+        }
+    }
+
+
+
+}

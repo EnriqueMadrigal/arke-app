@@ -6,9 +6,53 @@
     tools:context=".fragments.acercade">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:gravity="center"
+       android:orientation="vertical">
+
+       <TextView
+           style="@style/NormalBlackField"
+           android:id="@+id/acerca_label"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:paddingLeft="16dp"
+           android:lines="4"
+           android:text="App de Arke \nPara el control de herramientas\nCualquier ausunto relacionado \ncon esta App favor de dirigirse a:" />
+
+       <View
+           android:layout_width="match_parent"
+           android:layout_height="20dp"/>
+
+       <TextView
+           style="@style/NormalBlackField"
+           android:id="@+id/acerca_label3"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:paddingLeft="16dp"
+           android:lines="1"
+           android:autoLink="email"
+           android:text="soporte@datalabor.com.mx" />
+
+
+
+       <View
+           android:layout_width="match_parent"
+           android:layout_height="20dp"/>
+
+       <TextView
+           style="@style/NormalBlackField"
+           android:id="@+id/acerca_label2"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:paddingLeft="16dp"
+           android:lines="1"
+           android:autoLink="web"
+           android:text="http://www.datalabor.com.mx" />
+
+
+
+   </LinearLayout>
 
 </FrameLayout>

@@ -138,7 +138,7 @@
                         android:text="Mostrar"
                         android:id="@+id/btnResponsableMostrar"
                         android:textColor="@android:color/white"
-                        android:textSize="10dp"/>
+                        android:textSize="16dp"/>
 
 
 
